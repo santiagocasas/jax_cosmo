@@ -15,7 +15,8 @@ __all__ = ["Cosmology"]
 @register_pytree_node_class
 class Cosmology:
 
-  def __init__(self, Omega_c, Omega_b, h, n_s, sigma8, Omega_k, w0, wa):
+  def __init__(self, Omega_c, Omega_b, h, n_s, sigma8, Omega_k, w0, wa,
+                     gamma=0.55):
     """
     Cosmology object, stores primary and derived cosmological parameters.
 
@@ -47,6 +48,7 @@ class Cosmology:
     self._Omega_k = Omega_k
     self._w0 = w0
     self._wa = wa
+    self._gamma = gamma
 
     # Create a workspace where functions can store some precomputed
     # results
@@ -60,8 +62,9 @@ class Cosmology:
         '    Omega_k:  ' + str(self.Omega_k) + ' \n' + \
         '    w0:       ' + str(self.w0) + ' \n' + \
         '    wa:       ' + str(self.wa) + ' \n' + \
-        '    n:        ' + str(self.n_s) + ' \n' + \
-        '    sigma8:   ' + str(self.sigma8)
+        '    ns:        ' + str(self.n_s) + ' \n' + \
+        '    sigma8:   ' + str(self.sigma8) + ' \n' + \
+        '    gamma:       ' + str(self.gamma)
 
   def __repr__(self):
     return self.__str__()
@@ -69,12 +72,12 @@ class Cosmology:
   # Operations for flattening/unflattening representation
   def tree_flatten(self):
     return ((self._Omega_c, self._Omega_b, self._h, self._n_s, self._sigma8,
-             self._Omega_k, self._w0, self._wa), None)
+             self._Omega_k, self._w0, self._wa, self._gamma), None)
   @classmethod
   def tree_unflatten(cls, aux_data, children):
-    Omega_c, Omega_b, h, n_s, sigma8, Omega_k, w0, wa = children
+    Omega_c, Omega_b, h, n_s, sigma8, Omega_k, w0, wa, gamma = children
     return cls(Omega_c=Omega_c, Omega_b=Omega_b, h=h, n_s=n_s,
-               sigma8=sigma8, Omega_k=Omega_k, w0=w0, wa=wa)
+               sigma8=sigma8, Omega_k=Omega_k, w0=w0, wa=wa, gamma=gamma)
 
   # Cosmological parameters, base and derived
   @property
@@ -130,6 +133,10 @@ class Cosmology:
   @property
   def wa(self):
     return self._wa
+
+  @property
+  def gamma(self):
+    return self._gamma
 
   @property
   def n_s(self):
